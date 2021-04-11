@@ -40,4 +40,5 @@ public class AnimalDao {
         this.gender = gender;
         this.vaccinated = vaccinated;
     }
+
 }
