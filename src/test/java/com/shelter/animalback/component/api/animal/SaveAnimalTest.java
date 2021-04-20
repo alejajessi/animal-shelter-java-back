@@ -23,7 +23,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = {"spring.config.additional-location=classpath:component-test.yml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class SaveAnimalTest {
@@ -39,7 +40,7 @@ public class SaveAnimalTest {
     public void createAnimalSuccessful() {
         var animal = new CreateAnimalRequestBody();
 
-        animal.setName("Hela");
+        animal.setName("ThisIsMyLongName");
         animal.setBreed("Mestiza");
         animal.setGender("Female");
         animal.setVaccinated(true);
@@ -56,16 +57,16 @@ public class SaveAnimalTest {
         var animalResponse =
                 new ObjectMapper().readValue(response.getContentAsString(),CreateAnimalResponse.class);
 
-        assertThat(animalResponse.getName(), equalTo("Hela"));
+        assertThat(animalResponse.getName(), equalTo("ThisIsMyLongName"));
         assertThat(animalResponse.getBreed(), equalTo("Mestiza"));
         assertThat(animalResponse.getGender(), equalTo("Female"));
-        assertThat(animalResponse.isIVaccinated(), equalTo(true));
+        assertThat(animalResponse.isVaccinated(), equalTo(true));
         assertThat(animalResponse.getId(), notNullValue());
 
         var dbQuery = animalRepository.findById(animalResponse.getId());
         assertThat(dbQuery.isPresent(),is(true));
         var animalDB = dbQuery.get();
-        assertThat(animalDB.getName(), equalTo("Hela"));
+        assertThat(animalDB.getName(), equalTo("ThisIsMyLongName"));
         assertThat(animalDB.getBreed(), equalTo("Mestiza"));
         assertThat(animalDB.getGender(), equalTo("Female"));
         assertThat(animalDB.isVaccinated(), equalTo(true));
@@ -89,7 +90,7 @@ public class SaveAnimalTest {
         private String name;
         private String breed;
         private String gender;
-        private boolean iVaccinated;
+        private boolean vaccinated;
         private String[] vaccines;
     }
 
